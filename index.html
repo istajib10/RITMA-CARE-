@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ritma Care Link — Sistem Informasi Kesehatan RITMA MTA</title>
+ 
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+ 
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          slate: {
+            950: '#020617', 900: '#0F172A', 850: '#131f35', 800: '#1e293b', 700: '#334155',
+            600: '#475569', 500: '#64748b', 400: '#94a3b8', 300: '#cbd5e1', 200: '#e2e8f0',
+            100: '#f1f5f9' 
+          },
+          teal: {
+            700: '#0D7A72', 600: '#0D9488', 500: '#14b8a6', 400: '#2dd4bf', 300: '#5eead4',
+            200: '#99f6e4', 100: '#ccfbf1', 50: '#f0fdfa' 
+          },
+          amber: {
+            600: '#d97706', 500: '#f59e0b', 400: '#fbbf24', 100: '#fef3c7', 50: '#fffbeb' 
+          }
+        },
+        borderRadius: { '2xl': '1rem', '3xl': '1.5rem' }
+      }
+    }
+  }
+</script>
+ 
+<style>
+  :root { --teal: #0D9488; --slate-dark: #0F172A; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; background: #0F172A; color: #f1f5f9; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
+  
+  /* ── Light Mode Theme Overrides ── */
+  body.light-theme { background: #f8fafc; color: #0f172a; }
+  body.light-theme .main-content { background: #f8fafc; }
+  body.light-theme header { background: #ffffff; border-color: #e2e8f0; }
+  body.light-theme header button, body.light-theme header div { border-color: #cbd5e1 !important; }
+  body.light-theme aside.sidebar { background: #ffffff; border-color: #e2e8f0; }
+  body.light-theme .sidebar-title { color: #0f172a !important; }
+  body.light-theme .nav-item { color: #475569; }
+  body.light-theme .nav-item:hover { background: rgba(13,148,136,.1); color: #0d9488; }
+  body.light-theme .nav-item.active { background: rgba(13,148,136,.15); color: #0d9488; }
+  body.light-theme .stat-card { background: #ffffff !important; border-color: #e2e8f0 !important; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+  body.light-theme .stat-card span { color: #0f172a !important; }
+  body.light-theme .stat-card div { color: #475569 !important; }
+  body.light-theme .chart-container { background: #ffffff !important; border-color: #e2e8f0 !important; }
+  body.light-theme .chart-container div { color: #0f172a !important; }
+  body.light-theme .chart-container p { color: #64748b !important; }
+  body.light-theme .bg-slate-850 { background: #ffffff !important; border-color: #e2e8f0 !important; }
+  body.light-theme .data-table th { background: rgba(13,148,136,0.08) !important; color: #0d9488 !important; }
+  body.light-theme .data-table td { border-bottom-color: #e2e8f0 !important; color: #334155 !important; }
+  body.light-theme .data-table tr:hover td { background: rgba(13,148,136,.04) !important; }
+  body.light-theme .form-input { background: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
+  body.light-theme .form-input:focus { border-color: #0D9488 !important; }
+  body.light-theme .form-label { color: #475569 !important; }
+  body.light-theme .text-slate-100 { color: #0f172a !important; }
+  body.light-theme .text-slate-300 { color: #334155 !important; }
+  body.light-theme .text-slate-400 { color: #475569 !important; }
+  body.light-theme .text-slate-500 { color: #64748b !important; }
+  body.light-theme .bg-slate-800 { background: #f1f5f9 !important; border-color: #e2e8f0 !important; color: #334155 !important; }
+  body.light-theme .bg-slate-900 { background: #f1f5f9 !important; border-color: #e2e8f0 !important; color: #334155 !important; }
+  body.light-theme .modal-box { background: #ffffff !important; border-color: #e2e8f0 !important; color: #0f172a !important; }
+  body.light-theme #topbar-title { color: #0f172a !important; }
+  body.light-theme #topbar-subtitle { color: #64748b !important; }
+  body.light-theme #topbar-user { color: #0f172a !important; }
+  body.light-theme #sidebar-user { color: #475569 !important; }
+  body.light-theme .logo-hand-dark { color: #0f172a !important; }
+  
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #1e293b; }
+  ::-webkit-scrollbar-thumb { background: #0D9488; border-radius: 3px; }
+  
+  /* ── Page transitions ── */
+  .page { display: none; }
+  .page.active { display: flex; }
+  
+  /* ── Logo Animation ── */
+  .logo-hand { animation: handFloat 2.5s ease-in-out infinite; }
+  .logo-heart { animation: heartBeat 1.4s ease-in-out infinite; color: #22c55e; }
+  @keyframes heartBeat { 0%,100% { transform: scale(1); } 14% { transform: scale(1.18); } 28% { transform: scale(1); } 42% { transform: scale(1.12); } 70% { transform: scale(1); } }
+  @keyframes handFloat { 0%,100% { transform: translateY(0px) rotate(-8deg); } 50% { transform: translateY(-6px) rotate(-4deg); } }
+  
+  /* ── Sidebar ── */
+  .sidebar { width: 260px; min-height: 100vh; background: #0F172A; border-right: 1px solid #1e293b; flex-shrink: 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
+  .main-content { flex: 1; overflow-y: auto; background: #0f172a; min-height: 100vh; }
+  
+  /* ── Nav item hover ── */
+  .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 20px; border-radius: 12px; cursor: pointer; transition: all .25s; margin: 2px 10px; color: #94a3b8; font-size: 0.92rem; font-weight: 500; text-decoration: none; }
+  .nav-item:hover { background: rgba(13,148,136,.15); color: #2dd4bf; }
+  .nav-item:hover .nav-icon { transform: scale(1.18) rotate(-3deg); color: #2dd4bf; }
+  .nav-item.active { background: rgba(13,148,136,.2); color: #14b8a6; border-left: 3px solid #0D9488; }
+  .nav-item.active .nav-icon { color: #14b8a6; }
+  .nav-icon { font-size: 1.2rem; transition: transform .25s; flex-shrink: 0; }
+  
+  /* ── Cards hover ── */
+  .stat-card { transition: transform .25s, box-shadow .25s; cursor: default; }
+  .stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(13,148,136,.18); }
+  .stat-card:hover .card-icon { animation: bounce .5s; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  
+  /* ── Button hover ── */
+  .btn-teal { background: #0D9488; color: white; transition: background .2s, transform .18s, box-shadow .2s; border: none; }
+  .btn-teal:hover { background: #0D7A72; transform: translateY(-2px); box-shadow: 0 8px 22px rgba(13,148,136,.4); }
+  .btn-teal:active { transform: translateY(0); }
+  .btn-teal:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+  .btn-outline { border: 1px solid #475569; color: #cbd5e1; background: transparent; transition: all .2s; }
+  .btn-outline:hover { border-color: #94a3b8; color: #f1f5f9; background: rgba(255,255,255,0.05); }
+  
+  /* ── Input ── */
+  .form-input { background: #1e293b; border: 1.5px solid #334155; color: #f1f5f9; border-radius: 10px; padding: 10px 14px; width: 100%; transition: border-color .2s, box-shadow .2s; outline: none; font-size: 0.92rem; }
+  .form-input:focus { border-color: #0D9488; box-shadow: 0 0 0 3px rgba(13,148,136,.15); }
+  .form-input::placeholder { color: #475569; }
+  .form-input:read-only { background: #0f172a; color: #64748b; cursor: not-allowed; }
+  .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: #94a3b8; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .05em; }
+  
+  /* ── Icon action buttons ── */
+  .icon-btn { cursor: pointer; padding: 6px; border-radius: 8px; transition: all .2s; display: inline-flex; align-items: center; justify-content: center; }
+  .icon-btn:hover { transform: scale(1.2) rotate(5deg); }
+  .icon-btn.edit:hover { background: rgba(13,148,136,.2); color: #14b8a6; }
+  .icon-btn.delete:hover { background: rgba(239,68,68,.15); color: #f87171; }
+  
+  /* ── Alert stok menipis pulse ── */
+  .alert-pulse { animation: pulse-amber 2s infinite; }
+  @keyframes pulse-amber { 0%,100% { box-shadow: 0 0 0 0 rgba(245,158,11,.3); } 50% { box-shadow: 0 0 0 8px rgba(245,158,11,0); } }
+  
+  /* ── Bell ring animation on new data ── */
+  @keyframes ringBell { 0%, 100% { transform: rotate(0); } 15% { transform: rotate(15deg); } 30% { transform: rotate(-15deg); } 45% { transform: rotate(10deg); } 60% { transform: rotate(-10deg); } 75% { transform: rotate(5deg); } 90% { transform: rotate(-5deg); } }
+  .bell-ring { animation: ringBell 0.6s ease; }
+  
+  /* ── Login gradient bg ── */
+  .login-bg { background: linear-gradient(135deg, #0F172A 0%, #0D9488 60%, #0F172A 100%); background-size: 300% 300%; animation: gradShift 8s ease infinite; }
+  @keyframes gradShift { 0%  { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100%{ background-position: 0% 50%; } }
+  
+  /* ── Floating particles ── */
+  .particle { position: absolute; border-radius: 50%; background: rgba(13,148,136,.25); animation: floatUp linear infinite; pointer-events: none; }
+  @keyframes floatUp { 0%   { transform: translateY(100%) scale(.5); opacity: 0; } 10%  { opacity: .7; } 90%  { opacity: .4; } 100% { transform: translateY(-120%) scale(1.1); opacity: 0; } }
+  
+  /* ── Toast ── */
+  .toast { position: fixed; bottom: 28px; right: 28px; z-index: 9999; padding: 14px 22px; border-radius: 14px; font-size: .9rem; font-weight: 500; display: flex; align-items: center; gap: 10px; transform: translateX(120%); transition: transform .35s cubic-bezier(.34,1.56,.64,1); pointer-events: none; max-width: 320px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
+  .toast.show { transform: translateX(0); }
+  .toast.success { background: #0D9488; color: #fff; }
+  .toast.error   { background: #ef4444; color: #fff; }
+  .toast.warning { background: #f59e0b; color: #fff; }
+  
+  /* ── Modal ── */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 8000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity .25s; padding: 16px; }
+  .modal-backdrop.open { opacity: 1; pointer-events: all; }
+  .modal-box { background: #1e293b; border-radius: 20px; padding: 28px; width: 100%; max-width: 500px; border: 1px solid #334155; transform: scale(.92); transition: transform .25s; max-height: 90vh; overflow-y: auto; }
+  .modal-backdrop.open .modal-box { transform: scale(1); }
+  
+  /* ── Table ── */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th { background: rgba(13,148,136,.12); color: #2dd4bf; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; padding: 12px 14px; text-align: left; position: sticky; top: 0; z-index: 10; }
+  .data-table td { padding: 12px 14px; border-bottom: 1px solid #1e293b; color: #cbd5e1; font-size: .88rem; vertical-align: middle; }
+  .data-table tr:hover td { background: rgba(13,148,136,.06); }
+  
+  /* ── Stok control ── */
+  .stok-btn { width: 30px; height: 30px; border-radius: 8px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700; transition: all .2s; }
+  .stok-btn:hover { transform: scale(1.12); }
+  .stok-minus { background: #334155; color: #94a3b8; }
+  .stok-minus:hover { background: #ef4444; color: #fff; }
+  .stok-plus  { background: #0D9488; color: #fff; }
+  .stok-plus:hover  { background: #0D7A72; }
+  .chart-container { background: #1e293b; border-radius: 20px; border: 1px solid #334155; padding: 20px; min-height: 310px; }
+  
+  @media (max-width: 768px) {
+    .sidebar { position: fixed; left: -260px; height: 100vh; }
+    .sidebar.open { left: 0; }
+    .mobile-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; display: none; }
+    .sidebar.open + .mobile-backdrop { display: block; }
+  }
+</style>
+</head>
+<body>
+ 
+<div class="mobile-backdrop" id="sidebar-backdrop" onclick="document.getElementById('sidebar').classList.remove('open')"></div>
+ 
+<div id="page-login" class="page active min-h-screen w-full flex flex-col md:flex-row">
+  <div class="w-full md:w-[45%] min-h-screen bg-white flex items-center justify-center p-8 md:p-12">
+    <div class="w-full max-w-[380px]">
+      <div class="flex items-center gap-[14px] mb-[36px]">
+        <div class="relative w-[56px] h-[56px] flex items-end justify-center">
+          <i class="bi bi-heart-fill logo-heart text-[1.6rem] absolute top-[2px] left-1/2 -translate-x-1/2"></i>
+          <i class="bi bi-hand-index-thumb-fill logo-hand text-[2rem] text-slate-900 logo-hand-dark"></i>
+        </div>
+        <div>
+          <div class="text-[1.35rem] font-extrabold text-slate-900 tracking-tight leading-none">Ritma Care Link</div>
+          <div class="text-[0.78rem] text-slate-500 font-medium">Sistem Kesehatan Modern</div>
+        </div>
+      </div>
+ 
+      <h2 class="text-[1.5rem] font-extrabold text-slate-900 mb-1.5">Selamat Datang 👋</h2>
+      <p class="text-slate-500 text-[0.9rem] mb-[30px]">Masuk ke dashboard admin divisi kesehatan Anda</p>
+ 
+      <div class="mb-[18px]">
+        <label class="form-label text-slate-600">Username / Email</label>
+        <div class="relative">
+          <i class="bi bi-person absolute left-[13px] top-1/2 -translate-y-1/2 text-slate-400 text-[1rem]"></i>
+          <input id="inp-user" type="text" placeholder="Masukkan username" class="form-input bg-slate-50 border-slate-200 text-slate-900 pl-[38px]" value="admin"/>
+        </div>
+      </div>
+ 
+      <div class="mb-[10px]">
+        <label class="form-label text-slate-600">Password</label>
+        <div class="relative">
+          <i class="bi bi-lock absolute left-[13px] top-1/2 -translate-y-1/2 text-slate-400 text-[1rem]"></i>
+          <input id="inp-pass" type="password" placeholder="Masukkan password" class="form-input bg-slate-50 border-slate-200 text-slate-900 pl-[38px] pr-[44px]" value="ritmacare2026"/>
+          <button id="toggle-pass" onclick="togglePass()" class="absolute right-[12px] top-1/2 -translate-y-1/2 bg-none border-none cursor-pointer text-slate-400 hover:text-slate-600 transition-colors p-1 flex items-center justify-center">
+            <i id="eye-icon" class="bi bi-eye text-[1.05rem]"></i>
+          </button>
+        </div>
+      </div>
+ 
+      <div class="flex items-center justify-between mb-[26px]">
+        <label class="flex items-center gap-2 cursor-pointer text-slate-600 text-[0.85rem] select-none">
+          <input type="checkbox" id="chk-remember" class="accent-teal-600 w-[15px] h-[15px] rounded border-slate-300"/>
+          Ingat Saya
+        </label>
+        <a href="#" class="text-teal-600 text-[0.85rem] font-semibold hover:underline">Lupa Password?</a>
+      </div>
+ 
+      <button onclick="doLogin()" class="btn-teal w-full p-3.5 rounded-xl font-bold text-[0.95rem] cursor-pointer flex items-center justify-center gap-2">
+        <i class="bi bi-box-arrow-in-right"></i> Masuk Dashboard
+      </button>
+      <p class="text-center text-slate-400 text-[0.78rem] mt-[24px]">© 2026 Ritma Care Link. Hak Cipta Dilindungi.</p>
+    </div>
+  </div>
+ 
+  <div class="login-bg flex-1 min-h-[300px] md:min-h-screen relative overflow-hidden flex items-center justify-center flex-col p-10">
+    <div class="particle w-[60px] h-[60px] left-[10%] duration-[7s] delay-0"></div>
+    <div class="particle w-[30px] h-[30px] left-[25%] duration-[5s] delay-1000"></div>
+    <div class="particle w-[80px] h-[80px] left-[55%] duration-[9s] delay-2000"></div>
+    <div class="particle w-[20px] h-[20px] left-[75%] duration-[6s] delay-500"></div>
+ 
+    <div class="text-center z-10">
+      <div class="bg-white/10 rounded-full w-[160px] h-[160px] flex items-center justify-center mx-auto mb-[28px] border-2 border-white/20 backdrop-blur-[10px]">
+        <div class="relative w-[90px] h-[90px] flex items-end justify-center">
+          <i class="bi bi-heart-fill text-[2.8rem] text-emerald-500 absolute top-0 left-1/2 -translate-x-1/2 logo-heart"></i>
+          <i class="bi bi-hand-index-thumb-fill text-[3.5rem] text-white/90 logo-hand"></i>
+        </div>
+      </div>
+      <h1 class="text-[2rem] font-extrabold text-white mb-3">Ritma Care Link</h1>
+      <p class="text-white/80 text-[1rem] max-w-[420px] leading-relaxed mx-auto mb-8">Platform manajemen divisi kesehatan RITMA MTA UIN BANDUNG</p>
+    </div>
+  </div>
+</div>
+ 
+<div id="page-app" class="page w-full min-h-screen flex-row">
+ 
+  <aside class="sidebar" id="sidebar">
+    <div class="p-[22px_20px_16px] border-b border-slate-800">
+      <div class="flex items-center gap-[11px]">
+        <div class="relative w-[42px] h-[42px] flex items-end justify-center shrink-0">
+          <i class="bi bi-heart-fill logo-heart text-[1.1rem] absolute top-[1px] left-1/2 -translate-x-1/2"></i>
+          <i class="bi bi-hand-index-thumb-fill logo-hand text-[1.5rem] text-slate-200 logo-hand-dark"></i>
+        </div>
+        <div>
+          <div class="text-[1rem] font-extrabold text-slate-100 sidebar-title leading-none">Ritma Care</div>
+          <div class="text-[0.7rem] text-teal-500 font-semibold mt-1">Link System</div>
+        </div>
+      </div>
+    </div>
+ 
+    <nav class="flex-1 py-4 overflow-y-auto">
+      <div class="px-5 py-2 text-[0.68rem] font-bold text-slate-500 uppercase tracking-widest mb-1">Menu Utama</div>
+      <a class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard">
+        <i class="bi bi-speedometer2 nav-icon"></i><span>Dashboard</span>
+      </a>
+      <a class="nav-item" onclick="showSection('pasien')" id="nav-pasien">
+        <i class="bi bi-person-vcard nav-icon"></i><span>Data Pasien</span>
+      </a>
+      <a class="nav-item" onclick="showSection('obat')" id="nav-obat">
+        <i class="bi bi-capsule nav-icon"></i><span>Data Obat</span>
+      </a>
+      <a class="nav-item" onclick="showSection('anggota')" id="nav-anggota">
+        <i class="bi bi-people nav-icon"></i><span>Anggota</span>
+      </a>
+    </nav>
+ 
+    <div class="p-[16px_10px] border-t border-slate-800">
+      <a class="nav-item text-red-400 hover:text-red-300 hover:bg-red-500/10" onclick="doLogout()">
+        <i class="bi bi-box-arrow-left nav-icon text-red-400"></i><span>Log Out</span>
+      </a>
+      <div class="p-[12px_12px_4px] text-[0.72rem] text-slate-500 text-center">
+        <span id="sidebar-user" class="text-slate-400">admin</span> · Divisi v1.2
+      </div>
+    </div>
+  </aside>
+ 
+  <div class="main-content" id="main-content">
+    <header class="bg-slate-900 border-b border-slate-800 px-7 h-16 flex items-center justify-between sticky top-0 z-50">
+      <div class="flex items-center gap-3.5">
+        <button onclick="document.getElementById('sidebar').classList.add('open')" class="md:hidden bg-transparent border-none text-slate-400 cursor-pointer text-[1.3rem]" id="menu-toggle">
+          <i class="bi bi-list"></i>
+        </button>
+        <div>
+          <div id="topbar-title" class="text-[1.1rem] font-bold text-slate-100 leading-tight">Dashboard</div>
+          <div id="topbar-subtitle" class="text-[0.75rem] text-slate-500">Ringkasan aktivitas kesehatan hari ini</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button onclick="toggleTheme()" class="bg-slate-800 border-none rounded-xl w-10 h-10 cursor-pointer text-slate-400 flex items-center justify-center hover:text-slate-100 transition-colors" title="Ubah Tema">
+          <i id="theme-icon" class="bi bi-moon-stars-fill text-[1.1rem]"></i>
+        </button>
+ 
+        <div class="relative">
+          <button id="bell-btn" onclick="toggleNotifDropdown()" class="bell-btn bg-slate-800 border-none rounded-xl w-10 h-10 cursor-pointer text-slate-400 flex items-center justify-center relative transition-transform">
+            <i class="bi bi-bell text-[1.1rem]"></i>
+            <span id="notif-dot" class="absolute top-[7px] right-[7px] w-2.5 h-2.5 bg-rose-500 rounded-full border border-slate-900 hidden"></span>
+          </button>
+            
+          <div id="notif-dropdown" class="hidden absolute right-0 mt-3 w-80 bg-slate-850 border border-slate-700/80 rounded-2xl shadow-2xl z-[100] overflow-hidden">
+            <div class="p-4 border-b border-slate-700/60 flex justify-between items-center bg-slate-900">
+              <div class="flex items-center gap-2">
+                <i class="bi bi-bell-fill text-teal-500 text-xs"></i>
+                <span class="font-bold text-slate-100 text-xs">Pemberitahuan Aktivitas</span>
+              </div>
+              <button onclick="clearNotifications()" class="text-[0.68rem] text-teal-400 hover:text-teal-300 font-semibold bg-transparent border-none cursor-pointer flex items-center gap-1">
+                <i class="bi bi-trash3 text-[0.65rem]"></i> Bersihkan
+              </button>
+            </div>
+            <div id="notif-list" class="max-h-64 overflow-y-auto divide-y divide-slate-700/40">
+              <div class="p-4 text-center text-xs text-slate-500">Tidak ada notifikasi aktivitas baru.</div>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="flex items-center gap-2.5 bg-slate-800 p-[6px_12px_6px_8px] rounded-xl border border-slate-700">
+          <div class="w-8 h-8 bg-gradient-to-br from-teal-600 to-teal-400 rounded-lg flex items-center justify-center text-[0.9rem] font-bold text-white">A</div>
+          <div class="hidden sm:block">
+            <div id="topbar-user" class="text-[0.82rem] font-bold text-slate-100 leading-none mb-1">Admin</div>
+            <div class="text-[0.68rem] text-slate-500">Administrator</div>
+          </div>
+        </div>
+      </div>
+    </header>
+ 
+    <section id="sec-dashboard" class="p-[28px_28px_40px]">
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-[1.3rem] font-extrabold text-slate-100 mb-1">Selamat Datang di Admin Center <span class="text-teal-500">Ritma Care</span> 🏥</h2>
+        </div>
+        <div class="flex gap-2 self-start flex-wrap">
+          <button onclick="openReportModal()" class="btn-teal px-4 py-2 rounded-xl text-[0.82rem] font-bold flex items-center gap-2 shadow-lg">
+            <i class="bi bi-file-earmark-bar-graph"></i> Cetak Laporan Bulanan
+          </button>
+          <button onclick="syncDataAll()" class="btn-outline px-4 py-2 rounded-xl text-[0.82rem] font-semibold flex items-center gap-2">
+            <i class="bi bi-arrow-clockwise"></i> Sinkronkan Data
+          </button>
+        </div>
+      </div>
+ 
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px] mb-5">
+        <div class="stat-card bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-3xl p-[22px] flex items-center gap-[18px]">
+          <div class="w-[54px] h-[54px] bg-teal-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-teal-500/20">
+            <i class="bi bi-person-heart card-icon text-[1.5rem] text-teal-500"></i>
+          </div>
+          <div class="flex-1">
+            <div class="text-[0.75rem] text-slate-400 font-bold uppercase tracking-wider">Total Pasien</div>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span id="stat-total-pasien" class="text-[2rem] font-extrabold text-slate-100 leading-none">0</span>
+            </div>
+            <div class="text-[0.72rem] text-slate-500 mt-1">Terdaftar di sistem</div>
+          </div>
+        </div>
+ 
+        <div class="stat-card bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-3xl p-[22px] flex items-center gap-[18px]">
+          <div class="w-[54px] h-[54px] bg-indigo-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-indigo-500/20">
+            <i class="bi bi-capsule card-icon text-[1.5rem] text-indigo-400"></i>
+          </div>
+          <div class="flex-1">
+            <div class="text-[0.75rem] text-slate-400 font-bold uppercase tracking-wider">Item Obat Apotek</div>
+            <div id="stat-obat" class="text-[2rem] font-extrabold text-slate-100 leading-none mt-1">0</div>
+            <div class="text-[0.72rem] text-slate-500 mt-1">Stok obat terdaftar</div>
+          </div>
+        </div>
+ 
+        <div class="stat-card bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-3xl p-[22px] flex items-center gap-[18px]">
+          <div class="w-[54px] h-[54px] bg-amber-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-amber-500/20">
+            <i class="bi bi-people-fill card-icon text-[1.5rem] text-amber-500"></i>
+          </div>
+          <div class="flex-1">
+            <div class="text-[0.75rem] text-slate-400 font-bold uppercase tracking-wider">Staf Staf Aktif</div>
+            <div class="text-[2rem] font-extrabold text-slate-100 leading-none mt-1" id="stat-anggota">0</div>
+            <div class="text-[0.72rem] text-slate-500 mt-1">Pengurus & Staf Terdaftar</div>
+          </div>
+        </div>
+      </div>
+ 
+      <div id="alert-stok" class="hidden mb-5">
+        <div class="alert-pulse bg-gradient-to-br from-amber-950/40 to-amber-900/60 border border-amber-700/50 rounded-2xl p-[18px_22px] flex items-start gap-3.5">
+          <i class="bi bi-exclamation-triangle-fill text-[1.4rem] text-amber-500 shrink-0 mt-0.5"></i>
+          <div>
+            <div class="font-bold text-amber-200 text-[0.95rem] mb-1.5">⚠️ Perhatian: Stok Obat Menipis! (Kurang dari 10 unit)</div>
+            <div id="alert-stok-list" class="flex flex-wrap gap-2 text-amber-300 text-[0.84rem] leading-relaxed"></div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-[18px] mb-7">
+        <div class="chart-container">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="text-[0.92rem] font-bold text-slate-100">Diagram Sebaran Pasien</div>
+              <div class="text-[0.72rem] text-slate-500">Proporsi pasien berdasarkan No Kamar Mahasantri</div>
+            </div>
+            <i class="bi bi-person-heart text-teal-500 text-[1.3rem]"></i>
+          </div>
+          <div id="pie-chart" class="w-full h-[240px]"></div>
+        </div>
+ 
+        <div class="chart-container">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <div class="text-[0.92rem] font-bold text-slate-100">Diagram Stok Obat Apotek</div>
+              <div class="text-[0.72rem] text-slate-500">Kuantitas persediaan fisik seluruh obat terdaftar</div>
+            </div>
+            <i class="bi bi-capsule-pill text-indigo-400 text-[1.3rem]"></i>
+          </div>
+          <div id="line-chart" class="w-full h-[240px]"></div>
+        </div>
+      </div>
+    </section>
+ 
+    <section id="sec-pasien" class="p-[28px_28px_40px] hidden">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-[1.2rem] font-extrabold text-slate-100">Registrasi & Rekam Pasien</h2>
+          <p class="text-slate-500 text-[0.83rem] mt-0.5">Input data rekam medis pasien terintegrasi database sistem</p>
+        </div>
+        <i class="bi bi-person-vcard-fill text-[2rem] text-teal-500"></i>
+      </div>
+ 
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1 bg-slate-850 border border-slate-700/60 rounded-[24px] p-6 self-start">
+          <div class="text-[0.78rem] font-bold text-teal-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <i class="bi bi-plus-circle-fill"></i> <span id="form-pasien-title">Input Pasien Baru</span>
+          </div>
+          
+          <input type="hidden" id="inp-pasien-hidden-id" value=""/>
+          <div class="space-y-4">
+            <div>
+              <label class="form-label">No. Rekam Medis (Auto-Generated)</label>
+              <div class="relative">
+                <i class="bi bi-upc-scan absolute left-3 top-1/2 -translate-y-1/2 text-teal-500 text-[0.95rem]"></i>
+                <input id="inp-rm" type="text" placeholder="Auto-generate saat simpan" class="form-input pl-9" readonly/>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Nama Lengkap Pasien <span class="text-red-500">*</span></label>
+              <div class="relative">
+                <i class="bi bi-person absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[0.95rem]"></i>
+                <input id="inp-nama" type="text" placeholder="Nama lengkap pasien" class="form-input pl-9"/>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">No Kamar Mahasantri</label>
+              <div class="relative">
+                <i class="bi bi-door-open absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[0.95rem]"></i>
+                <input id="inp-kamar" type="text" placeholder="Contoh: Kamar 102 / A-03" class="form-input pl-9"/>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Semester</label>
+              <div class="relative">
+                <i class="bi bi-book absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[0.95rem]"></i>
+                <input id="inp-semester" type="text" placeholder="Contoh: Semester 4" class="form-input pl-9"/>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Obat yang Dibutuhkan</label>
+              <div class="relative">
+                <i class="bi bi-capsule absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[0.95rem]"></i>
+                <input id="inp-obat-pasien" type="text" placeholder="Contoh: Paracetamol, Vitamin C" class="form-input pl-9"/>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Penanggung Jawab Obat (PJ)</label>
+              <div class="relative">
+                <i class="bi bi-person-badge absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[0.95rem]"></i>
+                <input id="inp-pj" type="text" placeholder="Nama Apoteker / Penanggung Jawab PJ" class="form-input pl-9"/>
+              </div>
+            </div>
+ 
+            <div class="border-t border-slate-700/60 pt-4 flex gap-3">
+              <button onclick="resetPasienForm()" class="btn-outline flex-1 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-1">
+                <i class="bi bi-x-circle"></i> Batal
+              </button>
+              <button id="btn-save-pasien" onclick="simpanPasien()" class="btn-teal flex-[1.5] py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5">
+                <i class="bi bi-cloud-upload-fill"></i> Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="lg:col-span-2 bg-slate-850 border border-slate-700/60 rounded-[24px] overflow-hidden flex flex-col">
+          <div class="p-5 border-b border-slate-700/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <span class="text-[0.9rem] font-bold text-slate-100 flex items-center gap-2">
+                <i class="bi bi-table text-teal-500"></i> Rekam Pasien Terdaftar
+              </span>
+              <p class="text-[0.72rem] text-slate-500">Sinkronisasi Sistem Real-time</p>
+            </div>
+            <div class="w-full sm:w-64 relative">
+              <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+              <input id="pasien-search" type="text" oninput="filterPasien()" placeholder="Cari nama atau kamar..." class="form-input pl-9 py-1.5 text-xs bg-slate-900 border-slate-700"/>
+            </div>
+          </div>
+          
+          <div class="overflow-x-auto flex-1">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>No. RM</th>
+                  <th>Nama Lengkap</th>
+                  <th>No Kamar</th>
+                  <th>Semester</th>
+                  <th>Kebutuhan Obat</th>
+                  <th>PJ Obat</th>
+                  <th class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="pasien-table-body">
+                <tr>
+                  <td colspan="7" class="text-center text-slate-500 py-12">Memuat data pasien...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+ 
+    <section id="sec-obat" class="p-[28px_28px_40px] hidden">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-[1.2rem] font-extrabold text-slate-100">Apotek & Manajemen Obat</h2>
+          <p class="text-slate-500 text-[0.83rem] mt-0.5">Kelola data inventori, persediaan, dan tanggal kedaluwarsa</p>
+        </div>
+        <i class="bi bi-capsule-pill text-[2rem] text-indigo-400"></i>
+      </div>
+ 
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1 bg-slate-850 border border-slate-700/60 rounded-[24px] p-6 self-start">
+          <div class="text-[0.78rem] font-bold text-teal-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <i class="bi bi-plus-circle-fill"></i> Tambah / Edit Obat
+          </div>
+          
+          <input type="hidden" id="inp-obat-id"/>
+          <div class="space-y-4">
+            <div>
+              <label class="form-label">Kode Obat <span class="text-red-500">*</span></label>
+              <div class="relative">
+                <i class="bi bi-qr-code absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[0.95rem]"></i>
+                <input id="inp-kode-obat" type="text" placeholder="Contoh: OBT-101" class="form-input pl-9"/>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Nama Obat <span class="text-red-500">*</span></label>
+              <div class="relative">
+                <i class="bi bi-capsule absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[0.95rem]"></i>
+                <input id="inp-nama-obat" type="text" placeholder="Nama obat" class="form-input pl-9"/>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Kategori Obat</label>
+              <div class="relative">
+                <i class="bi bi-tag absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[0.95rem]"></i>
+                <input id="inp-kategori-obat" type="text" placeholder="Contoh: Tablet / Kapsul / Sirup" class="form-input pl-9"/>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Jumlah Stok Awal</label>
+              <div class="flex items-center gap-3 bg-slate-900 border border-slate-700 rounded-xl p-2 justify-between">
+                <button class="stok-btn stok-minus" onclick="changeStok(-1)"><i class="bi bi-dash"></i></button>
+                <input id="inp-stok" type="number" value="0" min="0" class="bg-transparent border-none text-slate-100 text-center font-bold text-lg w-20 outline-none"/>
+                <button class="stok-btn stok-plus" onclick="changeStok(1)"><i class="bi bi-plus"></i></button>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Tanggal Kadaluarsa</label>
+              <div class="relative">
+                <i class="bi bi-calendar-date absolute left-3 top-1/2 -translate-y-1/2 text-teal-500 text-[0.95rem] z-10 pointer-events-none"></i>
+                <input id="inp-kadaluarsa" type="date" class="form-input pl-9 [color-scheme:dark]"/>
+              </div>
+            </div>
+ 
+            <div class="border-t border-slate-700/60 pt-4 flex gap-3">
+              <button onclick="resetObatForm()" class="btn-outline flex-1 py-2.5 rounded-xl font-semibold flex items-center justify-center gap-1">
+                <i class="bi bi-x-circle"></i> Batal
+              </button>
+              <button id="btn-save-obat" onclick="simpanObat()" class="btn-teal flex-[1.5] py-2.5 rounded-xl font-bold flex items-center justify-center gap-1.5">
+                <i class="bi bi-cloud-upload-fill"></i> Simpan Obat
+              </button>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="lg:col-span-2 bg-slate-850 border border-slate-700/60 rounded-[24px] overflow-hidden flex flex-col">
+          <div class="p-5 border-b border-slate-700/60 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+              <span class="text-[0.9rem] font-bold text-slate-100 flex items-center gap-2">
+                <i class="bi bi-capsule-pill text-indigo-400"></i> Persediaan Obat Real-Time
+              </span>
+              <p class="text-[0.72rem] text-slate-500">Perbarui kuantitas stok langsung dari tabel aksi cepat</p>
+            </div>
+            <div class="w-full sm:w-64 relative">
+              <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+              <input id="obat-search" type="text" oninput="filterObat()" placeholder="Cari nama atau kategori..." class="form-input pl-9 py-1.5 text-xs bg-slate-900 border-slate-700"/>
+            </div>
+          </div>
+          
+          <div class="overflow-x-auto flex-1">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kode</th>
+                  <th>Nama Obat</th>
+                  <th>Kategori</th>
+                  <th class="text-center" style="width: 140px;">Stok Terkini</th>
+                  <th>Kadaluarsa</th>
+                  <th class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="obat-preview-body">
+                <tr>
+                  <td colspan="6" class="text-center text-slate-500 py-12">Memuat inventori obat...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+ 
+    <section id="sec-anggota" class="p-[28px_28px_40px] hidden">
+      <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div>
+          <h2 class="text-[1.2rem] font-extrabold text-slate-100">Manajemen Anggota & Staf Kesehatan</h2>
+          <p class="text-slate-500 text-[0.83rem] mt-0.5">Kelola tim, apoteker, dan hak akses administrasi</p>
+        </div>
+        <button onclick="openAnggotaModal()" class="btn-teal p-[11px_22px] rounded-xl font-bold text-[0.85rem] flex items-center gap-2">
+          <i class="bi bi-person-plus-fill"></i> Tambah Anggota
+        </button>
+      </div>
+ 
+      <div class="bg-slate-850 border border-slate-700/60 rounded-2xl p-4 mb-5 flex gap-3 items-center flex-wrap">
+        <div class="relative flex-1 min-w-[200px]">
+          <i class="bi bi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-[0.9rem]"></i>
+          <input id="anggota-search" type="text" placeholder="Cari nama, jabatan, departemen..." oninput="filterAnggota()" class="form-input pl-9 bg-slate-900 border-slate-800"/>
+        </div>
+        <button onclick="syncDataAll()" class="p-[10px_18px] rounded-xl border border-slate-700 bg-transparent text-slate-400 hover:text-slate-100 cursor-pointer text-[0.85rem] flex items-center gap-2">
+          <i class="bi bi-arrow-clockwise"></i> Refresh Database
+        </button>
+      </div>
+ 
+      <div class="bg-slate-850 border border-slate-700/60 rounded-[24px] overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nama Anggota</th>
+                <th>Jabatan</th>
+                <th>Departemen</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Bergabung</th>
+                <th class="text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="anggota-tbody">
+              <tr>
+                <td colspan="8" class="text-center text-slate-500 py-12">Memuat data anggota...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="mt-4 text-slate-500 text-[0.78rem] text-right" id="anggota-count">Menghitung...</div>
+    </section>
+ 
+  </div>
+</div>
+ 
+<div class="modal-backdrop" id="anggota-modal">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <div id="modal-title" class="text-[1.05rem] font-extrabold text-slate-100">Tambah Anggota Baru</div>
+        <div class="text-[0.75rem] text-slate-500 mt-0.5">Isi seluruh informasi anggota secara akurat</div>
+      </div>
+      <button onclick="closeAnggotaModal()" class="bg-slate-800 border-none rounded-lg w-8 h-8 cursor-pointer text-slate-400 hover:text-slate-100 flex items-center justify-center">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <input type="hidden" id="modal-id-anggota"/>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="sm:col-span-2">
+        <label class="form-label">Nama Lengkap <span class="text-red-500">*</span></label>
+        <input id="m-nama" type="text" placeholder="Nama lengkap anggota" class="form-input"/>
+      </div>
+      <div>
+        <label class="form-label">Jabatan / Peran</label>
+        <input id="m-jabatan" type="text" placeholder="Contoh: Perawat, Apoteker" class="form-input"/>
+      </div>
+      <div>
+        <label class="form-label">Departemen</label>
+        <input id="m-departemen" type="text" placeholder="Contoh: Poli Umum, IGD, Farmasi" class="form-input"/>
+      </div>
+      <div>
+        <label class="form-label">Email</label>
+        <input id="m-email" type="email" placeholder="email@klinik.com" class="form-input"/>
+      </div>
+      <div>
+        <label class="form-label">Telepon</label>
+        <input id="m-telepon" type="tel" placeholder="08xx-xxxx-xxxx" class="form-input"/>
+      </div>
+      <div class="sm:col-span-2">
+        <label class="form-label">Status Anggota</label>
+        <div class="flex gap-3">
+          <label class="flex items-center gap-2 cursor-pointer bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex-1 justify-center select-none" id="lbl-aktif">
+            <input type="radio" name="status-anggota" value="Aktif" class="accent-teal-500"/>
+            <span class="text-slate-100 text-[0.85rem]">Aktif</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer bg-slate-800 p-2.5 rounded-xl border border-slate-700 flex-1 justify-center select-none" id="lbl-nonaktif">
+            <input type="radio" name="status-anggota" value="Non-aktif" class="accent-teal-500"/>
+            <span class="text-slate-100 text-[0.85rem]">Non-aktif</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6 border-t border-slate-700/60 pt-4">
+      <button onclick="closeAnggotaModal()" class="btn-outline px-[22px] py-2.5 rounded-xl text-sm font-semibold">Batal</button>
+      <button id="btn-save-member" onclick="submitAnggota()" class="btn-teal px-[24px] py-2.5 rounded-xl font-bold text-sm flex items-center gap-1.5">
+        <i class="bi bi-cloud-upload-fill"></i> <span id="modal-btn-text">Simpan</span>
+      </button>
+    </div>
+  </div>
+</div>
+ 
+<div class="modal-backdrop" id="report-modal">
+  <div class="modal-box max-w-lg">
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <div class="text-[1.05rem] font-extrabold text-slate-100 flex items-center gap-2">
+          <i class="bi bi-file-earmark-bar-graph-fill text-teal-500"></i>
+          <span>Cetak Laporan Bulanan</span>
+        </div>
+        <div class="text-[0.75rem] text-slate-500 mt-0.5">Filter dan ekspor laporan Divisi Kesehatan</div>
+      </div>
+      <button onclick="closeReportModal()" class="bg-slate-800 border-none rounded-lg w-8 h-8 cursor-pointer text-slate-400 hover:text-slate-100 flex items-center justify-center">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Bulan Laporan</label>
+          <select id="rpt-bulan" class="form-input">
+            <option value="01">Januari</option>
+            <option value="02">Februari</option>
+            <option value="03">Maret</option>
+            <option value="04">April</option>
+            <option value="05">Mei</option>
+            <option value="06">Juni</option>
+            <option value="07">Juli</option>
+            <option value="08">Agustus</option>
+            <option value="09">September</option>
+            <option value="10">Oktober</option>
+            <option value="11">November</option>
+            <option value="12">Desember</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Tahun Laporan</label>
+          <select id="rpt-tahun" class="form-input">
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+          </select>
+        </div>
+      </div>
+ 
+      <div class="p-4 bg-slate-900/60 border border-slate-700/60 rounded-xl space-y-2">
+        <div class="text-xs font-bold text-teal-400 uppercase tracking-wider mb-1"><i class="bi bi-info-circle"></i> Info Laporan</div>
+        <p class="text-xs text-slate-400 leading-relaxed">Laporan bulanan akan mencakup ringkasan statistik, daftar rekam pasien mahasantri yang ditangani pada bulan terpilih, serta laporan status ketersediaan obat terkini.</p>
+      </div>
+    </div>
+ 
+    <div class="flex justify-end gap-3 mt-6 border-t border-slate-700/60 pt-4">
+      <button onclick="closeReportModal()" class="btn-outline px-[20px] py-2 rounded-xl text-xs font-semibold">Batal</button>
+      <button onclick="eksporLaporanPDF()" class="btn-teal px-[22px] py-2 rounded-xl font-bold text-xs flex items-center gap-1.5">
+        <i class="bi bi-printer"></i> Buka Halaman Cetak
+      </button>
+    </div>
+  </div>
+</div>
+ 
+<div class="modal-backdrop" id="confirm-modal">
+  <div class="modal-box max-w-[360px] text-center p-6">
+    <div class="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20 animate-pulse">
+      <i class="bi bi-trash3-fill text-[1.5rem] text-red-400"></i>
+    </div>
+    <div class="text-[1.05rem] font-bold text-slate-100 mb-1.5" id="confirm-modal-title">Hapus Data?</div>
+    <div class="text-slate-400 text-[0.85rem] mb-6" id="confirm-modal-desc">Data akan terhapus secara permanen dari server sistem.</div>
+    <div class="flex gap-2 justify-center">
+      <button onclick="closeConfirmModal()" class="btn-outline px-[18px] py-2 rounded-lg text-xs font-semibold">Batal</button>
+      <button id="confirm-hapus-btn" class="px-[18px] py-2 border-none rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold text-xs cursor-pointer transition-colors">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+ 
+<div id="toast" class="toast"><i id="toast-icon" class="bi"></i><span id="toast-msg"></span></div>
+ 
+<script>
+// ==========================================
+// 🔴 TEMPEL KODE URL APPS SCRIPT KAMU DI SINI 🔴
+// ==========================================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyH3MpXQSE-p2uy_unN7KbXQq_iiwFC1J2Fo1kw-f6MtmUOSHB7xfRqm_06-Lw1gOsS/exec";
+
+let globalPatients = [];
+let globalMedicines = [];
+let globalMembers = [];
+let notifications = []; 
+let chartsLoaded = false;
+ 
+google.charts.load('current', { packages: ['corechart'], callback: () => { chartsLoaded = true; checkAndRenderCharts(); } });
+ 
+// Ambil data dari Google Sheets
+async function loadDataFromSheets() {
+  if (!SCRIPT_URL || SCRIPT_URL.includes("MASUKKAN_URL_WEB_APP_SCRIPT")) {
+    console.error("URL Apps Script belum diisi!");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${SCRIPT_URL}?action=readAll`);
+    if (!response.ok) throw new Error("HTTP Status Error: " + response.status);
+    const result = await response.json();
+    
+    globalPatients = result.patients || [];
+    globalMedicines = result.medicines || [];
+    globalMembers = result.members || [];
+    
+    renderAll();
+  } catch (err) {
+    console.error("Gagal memuat data dari Google Sheets:", err);
+    // Peringatan pesan galat (Toast error) di sini sudah dihilangkan sepenuhnya
+  }
+}
+
+// Render seluruh data ke UI
+function renderAll() {
+  globalPatients.sort((a, b) => (b.tanggalGabung || '').localeCompare(a.tanggalGabung || ''));
+  globalMedicines.sort((a, b) => (a.namaObat || '').localeCompare(b.namaObat || ''));
+  globalMembers.sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+
+  renderPatients(globalPatients);
+  renderMedicines(globalMedicines);
+  renderMembers(globalMembers);
+  updateDashboardStats();
+  if (chartsLoaded) checkAndRenderCharts();
+}
+
+// Handler pengiriman request POST ke Apps Script
+async function postToSheets(actionType, sheetName, dataObj, targetId = null) {
+  try {
+    const bodyPayload = {
+      action: actionType,
+      sheet: sheetName,
+      data: dataObj
+    };
+    if (targetId) bodyPayload.id = targetId;
+
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(bodyPayload)
+    });
+    const resJson = await response.json();
+    if (resJson.success) {
+      await loadDataFromSheets(); 
+      return true;
+    } else {
+      showToast(resJson.error || "Gagal memproses transaksi", "error");
+      return false;
+    }
+  } catch (err) {
+    console.error("Eror koneksi API POST:", err);
+    showToast("Gagal terhubung ke Google Sheets.", "error");
+    return false;
+  }
+}
+
+// --- NOTIFIKASI CONTROLLER ---
+window.addNotification = function(message, type = 'info') {
+  const iconMap = {
+    success: 'bi-check-circle-fill text-emerald-400',
+    info: 'bi-info-circle-fill text-sky-400',
+    error: 'bi-exclamation-triangle-fill text-rose-500'
+  };
+  const iconClass = iconMap[type] || 'bi-bell-fill text-teal-500';
+  const notifObj = {
+    id: Date.now(), message, type, icon: iconClass,
+    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+  };
+  notifications.unshift(notifObj);
+  if (notifications.length > 20) notifications.pop();
+  
+  const bell = document.getElementById('bell-btn');
+  const dot = document.getElementById('notif-dot');
+  if (bell) { bell.classList.add('bell-ring'); setTimeout(() => bell.classList.remove('bell-ring'), 600); }
+  if (dot) dot.classList.remove('hidden');
+  
+  showToast(message, type);
+  renderNotifications();
+}
+ 
+window.renderNotifications = function() {
+  const listEl = document.getElementById('notif-list');
+  if (!listEl) return;
+  if (notifications.length === 0) {
+    listEl.innerHTML = `<div class="p-4 text-center text-xs text-slate-500">Tidak ada notifikasi aktivitas baru.</div>`;
+    return;
+  }
+  listEl.innerHTML = notifications.map(n => `
+    <div class="p-3 hover:bg-slate-800 transition-colors flex gap-3 items-start">
+      <div class="mt-0.5"><i class="bi ${n.icon} text-sm"></i></div>
+      <div class="flex-1">
+        <div class="text-[0.8rem] text-slate-200 leading-normal">${n.message}</div>
+        <div class="text-[0.68rem] text-slate-500 mt-1 flex items-center gap-1">
+          <i class="bi bi-clock text-[0.6rem]"></i> ${n.time}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+ 
+window.toggleNotifDropdown = function() {
+  const dropdown = document.getElementById('notif-dropdown');
+  if (dropdown) {
+    dropdown.classList.toggle('hidden');
+    if (!dropdown.classList.contains('hidden')) {
+      const dot = document.getElementById('notif-dot');
+      if (dot) dot.classList.add('hidden');
+    }
+  }
+}
+ 
+window.clearNotifications = function() { notifications = []; renderNotifications(); }
+document.addEventListener('click', (e) => {
+  const dropdown = document.getElementById('notif-dropdown');
+  const bellBtn = document.getElementById('bell-btn');
+  if (dropdown && bellBtn && !dropdown.contains(e.target) && !bellBtn.contains(e.target)) dropdown.classList.add('hidden');
+});
+ 
+// --- 🌓 THEME CONTROLLER ---
+window.toggleTheme = function() {
+  const body = document.body;
+  const themeIcon = document.getElementById('theme-icon');
+  body.classList.toggle('light-theme');
+  const isLight = body.classList.contains('light-theme');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  if (isLight) {
+    themeIcon.className = "bi bi-sun-fill text-[1.1rem] text-amber-500";
+    showToast('Mode Terang Diaktifkan', 'success');
+  } else {
+    themeIcon.className = "bi bi-moon-stars-fill text-[1.1rem]";
+    showToast('Mode Gelap Diaktifkan', 'success');
+  }
+  checkAndRenderCharts();
+}
+ 
+// --- 📊 MONTHLY EXPORT PDF ---
+window.openReportModal = function() {
+  const now = new Date();
+  document.getElementById('rpt-bulan').value = String(now.getMonth() + 1).padStart(2, '0');
+  document.getElementById('rpt-tahun').value = String(now.getFullYear());
+  document.getElementById('report-modal').classList.add('open');
+}
+window.closeReportModal = function() { document.getElementById('report-modal').classList.remove('open'); }
+ 
+window.eksporLaporanPDF = function() {
+  const bul = document.getElementById('rpt-bulan').value;
+  const tah = document.getElementById('rpt-tahun').value;
+  const namaBulan = document.getElementById('rpt-bulan').options[document.getElementById('rpt-bulan').selectedIndex].text;
+  
+  const filteredPatients = globalPatients.filter(p => {
+    if (!p.tanggalGabung) return false;
+    const parts = p.tanggalGabung.split('T')[0].split('-');
+    return parts[0] === tah && parts[1] === bul;
+  });
+ 
+  const obatListHtml = globalMedicines.map(o => {
+    const s = parseInt(o.stok) || 0;
+    const status = s < 10 ? '<span style="color:#d97706;font-weight:bold;">Menipis</span>' : '<span style="color:#10b981;font-weight:bold;">Aman</span>';
+    return `<tr><td>${o.kodeObat}</td><td>${o.namaObat}</td><td>${o.kategori}</td><td>${s}</td><td>${o.kadaluarsa}</td><td>${status}</td></tr>`;
+  }).join('');
+ 
+  const pasienListHtml = filteredPatients.length > 0 ? filteredPatients.map(p => `
+    <tr><td>${p.noRM}</td><td>${p.namaLengkap}</td><td>${p.noKamar}</td><td>${p.semester}</td><td>${p.obat}</td><td>${p.namaPJ}</td></tr>
+  `).join('') : `<tr><td colspan="6">Tidak ada pendaftaran pasien mahasantri pada periode ini.</td></tr>`;
+ 
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(`<html><head><title>Laporan Bulanan</title><style>body{font-family:sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;margin:15px 0;} th,td{border:1px solid #cbd5e1;padding:8px;text-align:left;} th{background:#f1f5f9;}</style></head><body><h3>RITMA CARE REPORT - ${namaBulan} ${tah}</h3><h4>I. Ringkasan</h4><p>Total Pasien Terdaftar: ${globalPatients.length}</p><p>Pasien Baru Bulan ini: ${filteredPatients.length}</p><h4>II. Daftar Pasien</h4><table><tr><th>No RM</th><th>Nama</th><th>Kamar</th><th>Semester</th><th>Obat</th><th>PJ</th></tr>${pasienListHtml}</table><h4>III. Inventori Obat</h4><table><tr><th>Kode</th><th>Nama</th><th>Kategori</th><th>Stok</th><th>Kadaluarsa</th><th>Status</th></tr>${obatListHtml}</table></body></html>`);
+  printWindow.document.close();
+}
+ 
+// --- HELPER DIALOGS ---
+window.togglePass = function() {
+  const inp = document.getElementById('inp-pass');
+  const ico = document.getElementById('eye-icon');
+  if (inp.type === 'password') { inp.type = 'text'; ico.className = 'bi bi-eye-slash'; }
+  else { inp.type = 'password'; ico.className = 'bi bi-eye'; }
+}
+ 
+window.showToast = function(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  const i = document.getElementById('toast-icon');
+  const m = document.getElementById('toast-msg');
+  if (!t || !i || !m) return;
+  t.className = 'toast ' + type;
+  i.className = type === 'success' ? 'bi bi-check-circle-fill' : type === 'error' ? 'bi bi-x-circle-fill' : 'bi bi-exclamation-triangle-fill';
+  m.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+ 
+window.doLogin = function() {
+  const user = document.getElementById('inp-user').value.trim();
+  const pass = document.getElementById('inp-pass').value.trim();
+  if (user === 'admin' && pass === 'ritmacare2026') {
+    document.getElementById('page-login').classList.remove('active');
+    document.getElementById('page-app').classList.add('active');
+    showSection('dashboard');
+    showToast('Login berhasil!', 'success');
+  } else {
+    showToast('Username atau password salah!', 'error');
+  }
+}
+window.doLogout = function() { document.getElementById('page-app').classList.remove('active'); document.getElementById('page-login').classList.add('active'); }
+ 
+window.showSection = function(name) {
+  document.querySelectorAll('#main-content > section').forEach(s => s.classList.add('hidden'));
+  document.getElementById('sec-' + name).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-' + name)?.classList.add('active');
+  document.getElementById('sidebar').classList.remove('open');
+  if (name === 'dashboard') { updateDashboardStats(); setTimeout(checkAndRenderCharts, 200); }
+}
+window.syncDataAll = function() { loadDataFromSheets(); showToast("Sinkronisasi database spreadsheet dipicu.", "success"); }
+ 
+// --- 1. PASIEN LOGIC ---
+window.simpanPasien = async function() {
+  const hiddenId = document.getElementById('inp-pasien-hidden-id').value;
+  const nama = document.getElementById('inp-nama').value.trim();
+  if (!nama) { showToast('Nama lengkap wajib diisi!', 'error'); return; }
+  
+  const noKamar = document.getElementById('inp-kamar').value.trim() || 'Kamar Umum';
+  const semester = document.getElementById('inp-semester').value.trim() || 'Semester 4';
+  const obat = document.getElementById('inp-obat-pasien').value.trim() || 'Tidak ada';
+  const namaPJ = document.getElementById('inp-pj').value.trim() || 'Petugas Jaga';
+  
+  const btn = document.getElementById('btn-save-pasien');
+  btn.disabled = true;
+  
+  if (hiddenId) {
+    const updatePayload = { namaLengkap: nama, noKamar: noKamar, semester: semester, obat: obat, namaPJ: namaPJ };
+    const success = await postToSheets('update', 'patients', updatePayload, hiddenId);
+    if (success) {
+      addNotification(`Data Medis ${nama} diperbarui.`, 'info');
+      resetPasienForm();
+    }
+  } else {
+    const genId = 'RM-' + Math.floor(1000 + Math.random() * 9000);
+    const newPayload = { id: genId, noRM: genId, namaLengkap: nama, noKamar: noKamar, semester: semester, obat: obat, namaPJ: namaPJ, tanggalGabung: new Date().toISOString().split('T')[0] };
+    const success = await postToSheets('insert', 'patients', newPayload);
+    if (success) {
+      addNotification(`Pasien Baru: ${nama} (${genId}) disimpan.`, 'success');
+      resetPasienForm();
+    }
+  }
+  btn.disabled = false;
+}
+ 
+window.resetPasienForm = function() {
+  document.getElementById('inp-pasien-hidden-id').value = '';
+  document.getElementById('inp-rm').value = '';
+  document.getElementById('inp-nama').value = '';
+  document.getElementById('inp-kamar').value = '';
+  document.getElementById('inp-semester').value = '';
+  document.getElementById('inp-obat-pasien').value = '';
+  document.getElementById('inp-pj').value = '';
+  document.getElementById('form-pasien-title').textContent = "Input Pasien Baru";
+}
+
+window.editPasien = function(id) {
+  const p = globalPatients.find(item => item.id.toString() === id.toString());
+  if (!p) return;
+  document.getElementById('inp-pasien-hidden-id').value = p.id;
+  document.getElementById('inp-rm').value = p.noRM;
+  document.getElementById('inp-nama').value = p.namaLengkap;
+  document.getElementById('inp-kamar').value = p.noKamar;
+  document.getElementById('inp-semester').value = p.semester;
+  document.getElementById('inp-obat-pasien').value = p.obat;
+  document.getElementById('inp-pj').value = p.namaPJ;
+  document.getElementById('form-pasien-title').textContent = "Ubah Data Pasien";
+  showSection('pasien');
+}
+ 
+window.hapusPasien = function(id, nama) {
+  const confirmBtn = document.getElementById('confirm-hapus-btn');
+  document.getElementById('confirm-modal-title').textContent = 'Hapus Pasien?';
+  document.getElementById('confirm-modal-desc').textContent = `Anda akan menghapus rekam medis pasien "${nama}" secara permanen.`;
+  document.getElementById('confirm-modal').classList.add('open');
+  
+  confirmBtn.onclick = async () => {
+    const success = await postToSheets('delete', 'patients', {}, id);
+    if (success) addNotification(`Rekam medis "${nama}" dihapus dari database.`, 'error');
+    closeConfirmModal();
+  }
+}
+ 
+function renderPatients(list) {
+  const tbody = document.getElementById('pasien-table-body');
+  if (!tbody) return;
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-12 text-slate-500"><i class="bi bi-inbox text-[2rem] block mb-2 text-slate-600"></i>Belum ada rekam medis terdaftar</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(p => `
+    <tr>
+      <td><span class="bg-teal-500/15 text-teal-400 border border-teal-500/20 px-2 py-0.5 rounded text-xs font-bold">${p.noRM || 'Auto'}</span></td>
+      <td><span class="font-bold text-slate-100">${p.namaLengkap}</span></td>
+      <td><span class="text-xs bg-slate-800 px-2 py-0.5 rounded border border-slate-700">${p.noKamar || 'Umum'}</span></td>
+      <td class="text-xs text-slate-300">${p.semester || 'Semester 4'}</td>
+      <td class="text-xs font-mono text-slate-300 max-w-[120px] truncate" title="${p.obat}">${p.obat || 'Tidak ada'}</td>
+      <td class="text-xs text-slate-400">${p.namaPJ || '—'}</td>
+      <td class="text-center">
+        <button class="icon-btn edit" onclick="editPasien('${p.id}')" title="Ubah Pasien"><i class="bi bi-pencil-square text-teal-500"></i></button>
+        <button class="icon-btn delete" onclick="hapusPasien('${p.id}', '${p.namaLengkap}')" title="Hapus Pasien"><i class="bi bi-trash-fill text-slate-500"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+ 
+window.filterPasien = function() {
+  const query = document.getElementById('pasien-search').value.toLowerCase();
+  const filtered = globalPatients.filter(p => (p.namaLengkap || '').toLowerCase().includes(query) || (p.noKamar || '').toLowerCase().includes(query) || (p.noRM || '').toLowerCase().includes(query));
+  renderPatients(filtered);
+}
+ 
+// --- 2. OBAT LOGIC ---
+window.changeStok = function(delta) {
+  const inp = document.getElementById('inp-stok');
+  inp.value = Math.max(0, (parseInt(inp.value) || 0) + delta);
+}
+ 
+window.updateStokBaris = async function(id, delta) {
+  const item = globalMedicines.find(o => o.id.toString() === id.toString());
+  if (!item) return;
+  const newStok = Math.max(0, (parseInt(item.stok) || 0) + delta);
+  await postToSheets('update', 'medicines', { stok: newStok }, id);
+}
+ 
+window.simpanObat = async function() {
+  const kode = document.getElementById('inp-kode-obat').value.trim();
+  const nama = document.getElementById('inp-nama-obat').value.trim();
+  if (!kode || !nama) { showToast('Kode dan nama obat wajib diisi!', 'error'); return; }
+  
+  const kat = document.getElementById('inp-kategori-obat').value.trim() || 'Umum';
+  const stok = parseInt(document.getElementById('inp-stok').value) || 0;
+  const exp = document.getElementById('inp-kadaluarsa').value || '—';
+  const id = document.getElementById('inp-obat-id').value;
+  
+  const btn = document.getElementById('btn-save-obat');
+  btn.disabled = true;
+  
+  if (id) {
+    const success = await postToSheets('update', 'medicines', { kodeObat: kode, namaObat: nama, kategori: kat, stok: stok, kadaluarsa: exp }, id);
+    if (success) addNotification(`Informasi Obat "${nama}" diperbaharui.`, 'info');
+  } else {
+    const randomId = 'OBT-' + Math.floor(100 + Math.random() * 900);
+    const success = await postToSheets('insert', 'medicines', { id: randomId, kodeObat: kode, namaObat: nama, kategori: kat, stok: stok, kadaluarsa: exp });
+    if (success) addNotification(`Obat Baru: "${nama}" telah terdaftar.`, 'success');
+  }
+  resetObatForm();
+  btn.disabled = false;
+}
+ 
+window.resetObatForm = function() {
+  document.getElementById('inp-obat-id').value = '';
+  document.getElementById('inp-kode-obat').value = '';
+  document.getElementById('inp-nama-obat').value = '';
+  document.getElementById('inp-kategori-obat').value = '';
+  document.getElementById('inp-stok').value = '0';
+  document.getElementById('inp-kadaluarsa').value = '';
+  document.getElementById('btn-save-obat').innerHTML = '<i class="bi bi-cloud-upload-fill"></i> Simpan Obat';
+}
+ 
+window.editObat = function(id) {
+  const item = globalMedicines.find(o => o.id.toString() === id.toString());
+  if (!item) return;
+  document.getElementById('inp-obat-id').value = item.id;
+  document.getElementById('inp-kode-obat').value = item.kodeObat || '';
+  document.getElementById('inp-nama-obat').value = item.namaObat || '';
+  document.getElementById('inp-kategori-obat').value = item.kategori || '';
+  document.getElementById('inp-stok').value = item.stok || '0';
+  document.getElementById('inp-kadaluarsa').value = item.kadaluarsa || '';
+  document.getElementById('btn-save-obat').innerHTML = '<i class="bi bi-check-circle-fill"></i> Perbaharui Obat';
+}
+ 
+window.hapusObat = function(id, nama) {
+  const confirmBtn = document.getElementById('confirm-hapus-btn');
+  document.getElementById('confirm-modal-title').textContent = 'Hapus Obat?';
+  document.getElementById('confirm-modal-desc').textContent = `Anda akan menghapus obat "${nama}" dari katalog apotek.`;
+  document.getElementById('confirm-modal').classList.add('open');
+  
+  confirmBtn.onclick = async () => {
+    const success = await postToSheets('delete', 'medicines', {}, id);
+    if (success) addNotification(`Obat "${nama}" ditarik dari persediaan apotek.`, 'error');
+    closeConfirmModal();
+  }
+}
+ 
+function renderMedicines(list) {
+  const tbody = document.getElementById('obat-preview-body');
+  if (!tbody) return;
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-500"><i class="bi bi-inbox text-[2rem] block mb-2 text-slate-600"></i>Belum ada data obat terdaftar</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(o => {
+    const s = parseInt(o.stok) || 0;
+    const isLow = s < 10;
+    return `
+      <tr>
+        <td><span class="bg-indigo-500/15 text-indigo-400 border px-2 py-0.5 rounded font-mono text-xs font-bold">${o.kodeObat}</span></td>
+        <td><span class="font-bold text-slate-100">${o.namaObat}</span></td>
+        <td><span class="text-xs bg-slate-800 px-2 py-0.5 rounded border border-slate-700">${o.kategori || 'Umum'}</span></td>
+        <td class="text-center">
+          <div class="flex items-center justify-center gap-2">
+            <button class="stok-btn stok-minus" onclick="updateStokBaris('${o.id}', -1)" title="Kurangi 1"><i class="bi bi-dash"></i></button>
+            <span class="font-bold font-mono text-[1.1rem] w-8 text-center ${isLow ? 'text-red-400 animate-pulse' : 'text-emerald-400'}">${s}</span>
+            <button class="stok-btn stok-plus" onclick="updateStokBaris('${o.id}', 1)" title="Tambah 1"><i class="bi bi-plus"></i></button>
+          </div>
+        </td>
+        <td class="text-xs font-mono text-slate-300">${o.kadaluarsa || '—'}</td>
+        <td class="text-center">
+          <button class="icon-btn edit" onclick="editObat('${o.id}')" title="Ubah Obat"><i class="bi bi-pencil-square text-slate-500"></i></button>
+          <button class="icon-btn delete" onclick="hapusObat('${o.id}', '${o.namaObat}')" title="Hapus Obat"><i class="bi bi-trash-fill text-slate-500"></i></button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+ 
+window.filterObat = function() {
+  const query = document.getElementById('obat-search').value.toLowerCase();
+  const filtered = globalMedicines.filter(o => (o.namaObat || '').toLowerCase().includes(query) || (o.kodeObat || '').toLowerCase().includes(query));
+  renderMedicines(filtered);
+}
+ 
+// --- 3. ANGGOTA LOGIC ---
+window.openAnggotaModal = function(mode = 'add') {
+  document.getElementById('modal-title').textContent = mode === 'add' ? 'Tambah Anggota Baru' : 'Edit Data Anggota';
+  document.getElementById('modal-btn-text').textContent = mode === 'add' ? 'Simpan' : 'Perbaharui';
+  document.getElementById('anggota-modal').classList.add('open');
+  if (mode === 'add') {
+    document.getElementById('modal-id-anggota').value = '';
+    ['m-nama', 'm-jabatan', 'm-departemen', 'm-email', 'm-telepon'].forEach(id => document.getElementById(id).value = '');
+    document.getElementsByName('status-anggota')[0].checked = true;
+  }
+}
+window.closeAnggotaModal = function() { document.getElementById('anggota-modal').classList.remove('open'); }
+ 
+window.editAnggota = function(id) {
+  const a = globalMembers.find(m => m.id.toString() === id.toString());
+  if (!a) return;
+  openAnggotaModal('edit');
+  document.getElementById('modal-id-anggota').value = a.id;
+  document.getElementById('m-nama').value = a.nama;
+  document.getElementById('m-jabatan').value = a.jabatan;
+  document.getElementById('m-departemen').value = a.departemen;
+  document.getElementById('m-email').value = a.email;
+  document.getElementById('m-telepon').value = a.telepon;
+  const radios = document.getElementsByName('status-anggota');
+  radios.forEach(r => r.checked = r.value === a.status);
+}
+ 
+window.submitAnggota = async function() {
+  const nama = document.getElementById('m-nama').value.trim();
+  if (!nama) { showToast('Nama anggota wajib diisi!', 'error'); return; }
+  
+  const id = document.getElementById('modal-id-anggota').value;
+  const status = document.querySelector('input[name="status-anggota"]:checked').value;
+  const payload = {
+    nama: nama,
+    jabatan: document.getElementById('m-jabatan').value.trim() || 'Tim Kesehatan',
+    departemen: document.getElementById('m-departemen').value.trim() || 'Umum',
+    email: document.getElementById('m-email').value.trim() || '—',
+    telepon: document.getElementById('m-telepon').value.trim() || '—',
+    status: status
+  };
+  
+  const btn = document.getElementById('btn-save-member');
+  btn.disabled = true;
+  
+  if (id) {
+    const success = await postToSheets('update', 'members', payload, id);
+    if (success) addNotification(`Profil staf ${nama} diperbarui.`, 'info');
+  } else {
+    const randomId = 'STF-' + Math.floor(100 + Math.random() * 900);
+    const success = await postToSheets('insert', 'members', { id: randomId, tanggalGabung: new Date().toISOString().split('T')[0], ...payload });
+    if (success) addNotification(`Staf Baru: ${nama} terdaftar di tim.`, 'success');
+  }
+  closeAnggotaModal();
+  btn.disabled = false;
+}
+ 
+window.konfirmasiHapus = function(id, nama) {
+  const confirmBtn = document.getElementById('confirm-hapus-btn');
+  document.getElementById('confirm-modal-title').textContent = 'Keluarkan Anggota?';
+  document.getElementById('confirm-modal-desc').textContent = `Menghapus anggota "${nama}" akan mencabut hak akses divisi mereka secara permanen.`;
+  document.getElementById('confirm-modal').classList.add('open');
+  
+  confirmBtn.onclick = async () => {
+    const success = await postToSheets('delete', 'members', {}, id);
+    if (success) addNotification(`Staf ${nama} telah dikeluarkan dari keanggotaan aktif.`, 'error');
+    closeConfirmModal();
+  }
+}
+window.closeConfirmModal = function() { document.getElementById('confirm-modal').classList.remove('open'); }
+ 
+function renderMembers(list) {
+  const tbody = document.getElementById('anggota-tbody');
+  if (!tbody) return;
+  document.getElementById('anggota-count').textContent = `Menampilkan ${list.length} anggota`;
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center py-12 text-slate-500"><i class="bi bi-people text-[2.2rem] block mb-2 text-slate-600"></i>Belum ada data anggota terdaftar</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = list.map(a => `
+    <tr>
+      <td><span class="bg-slate-800 border text-slate-400 px-2 py-0.5 rounded text-xs font-mono">${a.id}</span></td>
+      <td>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-gradient-to-br from-teal-600 to-teal-400 rounded-lg flex items-center justify-center font-extrabold text-xs text-white shrink-0">${(a.nama || 'A').charAt(0)}</div>
+          <span class="font-bold text-slate-100">${a.nama}</span>
+        </div>
+      </td>
+      <td class="text-slate-300 text-xs">${a.jabatan || 'Tim Kesehatan'}</td>
+      <td><span class="bg-indigo-500/10 text-indigo-300 border px-2 py-0.5 rounded text-xs font-medium">${a.departemen || 'Umum'}</span></td>
+      <td class="text-slate-400 font-mono text-xs">${a.email || '—'}</td>
+      <td><span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${a.status === 'Aktif' ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/10' : 'bg-rose-500/15 text-rose-400 border border-rose-500/10'}">${a.status || 'Aktif'}</span></td>
+      <td class="text-slate-400 font-mono text-xs">${a.tanggalGabung ? a.tanggalGabung.split('T')[0] : '—'}</td>
+      <td class="text-center">
+        <button class="icon-btn edit" onclick="editAnggota('${a.id}')" title="Edit Profil"><i class="bi bi-pencil-square text-slate-500"></i></button>
+        <button class="icon-btn delete" onclick="konfirmasiHapus('${a.id}', '${a.nama}')" title="Keluarkan Anggota"><i class="bi-person-dash text-slate-500"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+ 
+window.filterAnggota = function() {
+  const query = document.getElementById('anggota-search').value.toLowerCase();
+  const filtered = globalMembers.filter(m => (m.nama || '').toLowerCase().includes(query) || (m.jabatan || '').toLowerCase().includes(query));
+  renderMembers(filtered);
+}
+ 
+// --- DASHBOARD STATISTICS & CHARTS ---
+function updateDashboardStats() {
+  document.getElementById('stat-total-pasien').textContent = globalPatients.length;
+  document.getElementById('stat-obat').textContent = globalMedicines.length;
+  document.getElementById('stat-anggota').textContent = globalMembers.filter(m => m.status === 'Aktif').length;
+ 
+  const lowStocks = globalMedicines.filter(o => (parseInt(o.stok) || 0) < 10);
+  const alertContainer = document.getElementById('alert-stok');
+  const alertList = document.getElementById('alert-stok-list');
+  const notifDot = document.getElementById('notif-dot');
+  
+  if (lowStocks.length > 0) {
+    if (alertContainer) alertContainer.classList.remove('hidden');
+    if (notifDot) notifDot.classList.remove('hidden');
+    if (alertList) alertList.innerHTML = lowStocks.map(o => `<span class="bg-black/30 border border-amber-500/30 px-2.5 py-1 rounded-lg inline-flex items-center gap-1"><i class="bi bi-dash-circle-fill text-amber-500"></i><strong>${o.namaObat}</strong><span class="text-amber-400">(${o.stok} unit)</span></span>`).join(' ');
+  } else {
+    if (alertContainer) alertContainer.add('hidden');
+    if (notifications.length === 0 && notifDot) notifDot.classList.add('hidden');
+  }
+}
+ 
+function checkAndRenderCharts() {
+  if (!chartsLoaded) return;
+  const isLight = document.body.classList.contains('light-theme');
+  const textColor = isLight ? '#0f172a' : '#94a3b8';
+  const gridlineColor = isLight ? '#f1f5f9' : '#1e293b';
+ 
+  // 1. Chart Pasien
+  const kamarCounts = {};
+  globalPatients.forEach(p => { const kmr = p.noKamar || 'Kamar Umum'; kamarCounts[kmr] = (kamarCounts[kmr] || 0) + 1; });
+  const pieData = [['Kamar Mahasantri', 'Jumlah Pasien']];
+  const keys = Object.keys(kamarCounts);
+  if (keys.length > 0) keys.forEach(k => pieData.push([k, kamarCounts[k]]));
+  else pieData.push(['Umum', 0], ['A-03', 0]);
+ 
+  const gDataPie = google.visualization.arrayToDataTable(pieData);
+  const pieOpts = { is3D: true, backgroundColor: 'transparent', legend: { textStyle: { color: textColor, fontSize: 11 } }, pieSliceBorderColor: isLight ? '#ffffff' : '#1e293b', chartArea: { width:'90%', height:'90%' } };
+  const pieEl = document.getElementById('pie-chart');
+  if (pieEl) new google.visualization.PieChart(pieEl).draw(gDataPie, pieOpts);
+ 
+  // 2. Chart Obat
+  const barData = [['Nama Obat', 'Jumlah Stok', { role: 'style' }]];
+  if (globalMedicines.length > 0) {
+    globalMedicines.forEach((o, index) => {
+      const colors = ['#0D9488', '#818cf8', '#fbbf24', '#f87171', '#34d399', '#a78bfa'];
+      barData.push([o.namaObat, parseInt(o.stok) || 0, colors[index % colors.length]]);
+    });
+  } else { barData.push(['Belum Ada Obat', 0, '#0D9488']); }
+ 
+  const gDataBar = google.visualization.arrayToDataTable(barData);
+  const barOpts = { backgroundColor: 'transparent', legend: { position: 'none' }, hAxis: { textStyle: { color: textColor, fontSize: 9 }, gridlines: { color: gridlineColor } }, vAxis: { textStyle: { color: textColor, fontSize: 10 }, gridlines: { color: gridlineColor }, minValue: 0 }, chartArea: { width:'85%', height:'75%' } };
+  const barEl = document.getElementById('line-chart');
+  if (barEl) new google.visualization.ColumnChart(barEl).draw(gDataBar, barOpts);
+}
+ 
+// App Lifecycle
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+    const themeIcon = document.getElementById('theme-icon');
+    if (themeIcon) themeIcon.className = "bi bi-sun-fill text-[1.1rem] text-amber-500";
+  }
+  loadDataFromSheets();
+});
+ 
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('page-login').classList.contains('active')) doLogin();
+});
+</script>
+</body>
+</html>
